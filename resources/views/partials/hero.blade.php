@@ -15,8 +15,7 @@
             </a>
         </div>
         <div class="md:w-1/2 flex justify-center">
-            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=cover&w=500&q=80"
-                 alt="Красива дівчина з волоссям" class="rounded-3xl shadow-lg w-96 h-96 object-cover border-4 border-gray-100">
+            <img src="/images/beauty.jpg" alt="Доглянуте волосся" class="rounded-3xl shadow-lg w-96 h-96 object-cover border-4 border-gray-100">
         </div>
     </div>
 </section>

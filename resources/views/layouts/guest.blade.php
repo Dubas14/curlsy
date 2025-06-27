@@ -14,15 +14,20 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
+    <body class="font-sans text-gray-900 antialiased bg-white">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-white">
             <div>
-                <a href="/" wire:navigate>
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                <a href="/" class="block mb-2">
+                    <img
+                            src="{{ asset('images/logo.png') }}"
+                            alt="Curlsy Logo"
+                            class="mx-auto h-32 md:h-40"  {{-- h-32 = 128px, md:h-40 = 160px на більших екранах --}}
+                            style="max-width: 260px;"
+                    >
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+            <div >
                 {{ $slot }}
             </div>
         </div>
