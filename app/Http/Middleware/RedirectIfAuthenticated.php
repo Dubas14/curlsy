@@ -10,7 +10,6 @@ class RedirectIfAuthenticated
 {
     public function handle(Request $request, Closure $next, ...$guards)
     {
-        // Якщо користувач вже залогінений
         if (Auth::check()) {
             if (Auth::user()->is_admin) {
                 return redirect('/admin');

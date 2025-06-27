@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Додаємо іменовані middleware
         $middleware->alias([
             'auth' => \App\Http\Middleware\Authenticate::class,
-            'admin' => \App\Http\Middleware\IsAdmin::class, // твій кастомний middleware
+            'admin' => \App\Http\Middleware\IsAdmin::class,
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             // ...
         ]);
