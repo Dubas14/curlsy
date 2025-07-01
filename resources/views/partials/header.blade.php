@@ -18,6 +18,7 @@
         <a href="#" class="text-gray-700 hover:text-yellow-500 font-medium transition">Про нас</a>
         @auth
             <a href="{{ route('dashboard') }}" class="font-medium hover:text-blue-600 transition">Кабінет</a>
+
             @if(auth()->user()->is_admin)
                 <a href="/admin" class="font-medium hover:text-yellow-700 transition">Адмінка</a>
             @endif

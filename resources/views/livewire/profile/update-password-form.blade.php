@@ -40,40 +40,33 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Update Password') }}
+        <h2 class="text-lg font-medium text-gray-900">
+            Оновлення пароля
         </h2>
-
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
+        <p class="mt-1 text-sm text-gray-600">
+            Введіть новий пароль для свого облікового запису.
         </p>
     </header>
 
-    <form wire:submit="updatePassword" class="mt-6 space-y-6">
+    @if (session()->has('status'))
+        <div class="text-green-600 mt-2">{{ session('status') }}</div>
+    @endif
+
+    <form wire:submit.prevent="save" class="mt-6 space-y-6">
         <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input wire:model="current_password" id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->get('current_password')" class="mt-2" />
+            <label for="current_password" class="block text-sm font-medium">Поточний пароль</label>
+            <input wire:model.defer="current_password" type="password" id="current_password" class="input" autocomplete="current-password">
+            @error('current_password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
-
         <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input wire:model="password" id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <label for="password" class="block text-sm font-medium">Новий пароль</label>
+            <input wire:model.defer="password" type="password" id="password" class="input" autocomplete="new-password">
+            @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
-
         <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input wire:model="password_confirmation" id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            <label for="password_confirmation" class="block text-sm font-medium">Підтвердіть пароль</label>
+            <input wire:model.defer="password_confirmation" type="password" id="password_confirmation" class="input" autocomplete="new-password">
         </div>
-
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            <x-action-message class="me-3" on="password-updated">
-                {{ __('Saved.') }}
-            </x-action-message>
-        </div>
+        <button type="submit" class="btn btn-primary mt-4">Оновити пароль</button>
     </form>
 </section>
