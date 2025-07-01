@@ -16,7 +16,8 @@ class Product extends Model
         'sale_price',
         'country',
         'description',
-        'category_id'
+        'category_id',
+        'position',
     ];
 
     protected static function booted()

@@ -5,6 +5,7 @@
     <title>@yield('title', 'Curlsy Admin')</title>
     @vite('resources/css/app.css')
     @livewireStyles
+    <script src="https://cdn.jsdelivr.net/gh/livewire/sortable@v0.x.x/dist/livewire-sortable.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
