@@ -8,7 +8,6 @@ use App\Models\Category;
 
 class ProductTable extends Component
 {
-
     public $selectedCategoryId = null;
     public $categoryName = null;
     public $products = [];
@@ -36,6 +35,8 @@ class ProductTable extends Component
 
     public function loadProducts($id): void
     {
+        logger("Load products for category ID $id");
+
         $this->resetEditingState();
         $category = Category::findOrFail($id);
         $this->selectedCategoryId = $category->id;
@@ -70,26 +71,24 @@ class ProductTable extends Component
         $this->editProductId = null;
         $this->editData = [];
     }
+    public function selectCategory($id)
+    {
+        $this->loadProducts($id);
+    }
 
     public function reorder(array $orderedIds): void
     {
-        if (empty($orderedIds)) {
-            return;
-        }
+        if (empty($orderedIds)) return;
 
-        try {
-            \DB::transaction(function () use ($orderedIds) {
-                foreach ($orderedIds as $order => $id) {
-                    Product::where('id', $id)->update(['position' => $order + 1]);
-                }
-            });
+        \DB::transaction(function () use ($orderedIds) {
+            foreach ($orderedIds as $order => $id) {
+                Product::where('id', $id)->update(['position' => $order + 1]);
+            }
+        });
 
-            $this->loadProducts($this->selectedCategoryId);
-        } catch (\Exception $e) {
-            \Log::error('Reorder error: '.$e->getMessage());
-            $this->dispatch('notify', message: 'Помилка при зміні порядку', type: 'error');
-        }
+        $this->loadProducts($this->selectedCategoryId);
     }
+
     public function handleReorderProduct($data): void
     {
         $product = Product::find($data['product_id']);
@@ -113,5 +112,4 @@ class ProductTable extends Component
     {
         return view('livewire.admin.product-table');
     }
-
 }

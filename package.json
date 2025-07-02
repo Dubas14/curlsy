@@ -18,6 +18,8 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "alpinejs": "^3.14.9",
+        "livewire-sortable": "^1.0.0",
         "sortablejs": "^1.15.6"
     }
 }

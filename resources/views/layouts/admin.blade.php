@@ -7,7 +7,7 @@
     @livewireStyles
     @livewireScripts
     @livewireSortableScripts
-    <script src="https://cdn.jsdelivr.net/gh/livewire/sortable@v1.x.x/dist/livewire-sortable.js"></script>
+    @vite('resources/js/app.js')
 </head>
 <body class="bg-gray-100 text-gray-900">
 

@@ -10,6 +10,10 @@ class SidebarMenu extends Component
     public $categories;
     public $selectedCategoryId = null; // Додана публічна змінна для відстеження вибраної категорії
 
+    protected $listeners = [
+        'category-selected' => 'setSelectedCategory',
+    ];
+
     public function mount()
     {
         $this->loadCategories();
@@ -23,10 +27,15 @@ class SidebarMenu extends Component
     public function selectCategory($categoryId)
     {
         $this->selectedCategoryId = $categoryId;
-        $this->dispatch('category-selected', id: $categoryId);
+        $this->dispatch('category-selected', $categoryId);
 
         // Якщо потрібно оновити стан самого компонента
         $this->render();
+    }
+
+    public function setSelectedCategory($categoryId)
+    {
+        $this->selectedCategoryId = $categoryId;
     }
 
     public function render()
