@@ -90,33 +90,23 @@ class ProductTable extends Component
             $this->dispatch('notify', message: 'Помилка при зміні порядку', type: 'error');
         }
     }
-    public function handleReorderProduct(array $payload): void
+    public function handleReorderProduct($data): void
     {
-        if (!isset($payload['product_id'], $payload['new_category_id'])) {
-            return;
-        }
+        $product = Product::find($data['product_id']);
+        if (!$product) return;
 
-        try {
-            \DB::transaction(function () use ($payload) {
-                // Обновляем категорию перемещаемого товара
-                Product::where('id', $payload['product_id'])
-                    ->update(['category_id' => $payload['new_category_id']]);
+        \DB::transaction(function () use ($data, $product) {
+            $product->update(['category_id' => $data['new_category_id']]);
 
-                if (!empty($payload['ordered_ids'])) {
-                    foreach ($payload['ordered_ids'] as $position => $id) {
-                        Product::where('id', $id)
-                            ->update(['position' => $position + 1]);
-                    }
+            if (!empty($data['ordered_ids'])) {
+                foreach ($data['ordered_ids'] as $position => $id) {
+                    Product::where('id', $id)->update(['position' => $position + 1]);
                 }
-            });
+            }
+        });
 
-            $this->selectedCategoryId = $payload['new_category_id'];
-            $this->loadProducts($this->selectedCategoryId);
-
-        } catch (\Exception $e) {
-            \Log::error('Reorder between categories error: '.$e->getMessage());
-            $this->dispatch('notify', message: 'Помилка при переміщенні між категоріями', type: 'error');
-        }
+        $this->selectedCategoryId = $data['new_category_id'];
+        $this->loadProducts($this->selectedCategoryId);
     }
 
     public function render()

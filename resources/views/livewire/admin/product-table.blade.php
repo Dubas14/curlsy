@@ -123,39 +123,36 @@
     @endif
 </div>
 
-<script>
-    document.addEventListener('livewire:initialized', () => {
-        const container = document.querySelector('.sortable-category');
-        if (container) {
-            new Sortable(container, {
-                animation: 150,
-                onEnd: function(evt) {
-                    if (!evt.item || !evt.to) return;
 
-                    const orderedIds = Array.from(container.querySelectorAll('.sortable-item'))
-                        .map(item => item.dataset.id)
-                        .filter(id => id);
-                    @this.call('reorder', orderedIds);
-                }
-            });
-        }
+<script>
+    function attachDragDropHandlers() {
         document.querySelectorAll('.sortable-item').forEach(item => {
             item.addEventListener('dragstart', e => {
                 e.dataTransfer.setData('text/plain', item.dataset.id);
             });
         });
 
-        document.querySelectorAll('[data-category-id]').forEach(btn => {
-            btn.addEventListener('dragover', e => e.preventDefault());
-            btn.addEventListener('drop', e => {
+        const droppableTargets = document.querySelectorAll('[data-category-id]');
+        droppableTargets.forEach((target) => {
+            target.addEventListener('dragover', e => e.preventDefault());
+
+            target.addEventListener('drop', e => {
                 e.preventDefault();
                 const productId = e.dataTransfer.getData('text/plain');
                 if (!productId) return;
-            @this.call('handleReorderProduct', {
-                product_id: productId,
-                new_category_id: btn.dataset.categoryId
-                    });
+
+                const orderedIds = Array.from(document.querySelectorAll('.sortable-item'))
+                    .map(item => item.dataset.id);
+
+                Livewire.emit('handleReorderProduct', {
+                    product_id: productId,
+                    new_category_id: target.dataset.categoryId,
+                    ordered_ids: orderedIds,
                 });
             });
-    });
+        });
+    }
+
+    document.addEventListener('livewire:initialized', attachDragDropHandlers);
+    document.addEventListener('livewire:update', attachDragDropHandlers);
 </script>
