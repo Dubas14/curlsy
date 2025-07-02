@@ -102,7 +102,6 @@ class ProductTable extends Component
                 Product::where('id', $payload['product_id'])
                     ->update(['category_id' => $payload['new_category_id']]);
 
-                // Обновляем позиции всех товаров в новой категории
                 if (!empty($payload['ordered_ids'])) {
                     foreach ($payload['ordered_ids'] as $position => $id) {
                         Product::where('id', $id)
@@ -111,11 +110,8 @@ class ProductTable extends Component
                 }
             });
 
-            // Обновляем список товаров в обеих категориях
-            $this->loadProducts($payload['new_category_id']);
-            if (isset($payload['old_category_id']) && $payload['old_category_id'] != $payload['new_category_id']) {
-                $this->loadProducts($payload['old_category_id']);
-            }
+            $this->selectedCategoryId = $payload['new_category_id'];
+            $this->loadProducts($this->selectedCategoryId);
 
         } catch (\Exception $e) {
             \Log::error('Reorder between categories error: '.$e->getMessage());

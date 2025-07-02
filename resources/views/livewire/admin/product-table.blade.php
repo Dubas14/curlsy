@@ -125,55 +125,37 @@
 
 <script>
     document.addEventListener('livewire:initialized', () => {
-        const containers = document.querySelectorAll('.sortable-category');
-
-        containers.forEach(container => {
+        const container = document.querySelector('.sortable-category');
+        if (container) {
             new Sortable(container, {
-                group: {
-                    name: 'products',
-                    pull: function(to, from) {
-                        // Разрешаем перемещение только между разными списками
-                        return to.el !== from.el ? 'clone' : true;
-                    },
-                    put: function(to) {
-                        // Разрешаем добавлять только в существующие категории
-                        return to.el.dataset.categoryId !== undefined;
-                    }
-                },
                 animation: 150,
-                sort: true,
-                draggable: '.sortable-item',
                 onEnd: function(evt) {
-                    if (!evt.item || !evt.to || !evt.from) return;
+                    if (!evt.item || !evt.to) return;
 
-                    const movedId = evt.item.dataset.id;
-                    const newCategoryId = evt.to.dataset.categoryId;
-                    const oldCategoryId = evt.from.dataset.categoryId;
-
-                    if (!movedId || !newCategoryId || !oldCategoryId) {
-                        console.error('Missing required data attributes');
-                        return;
-                    }
-
-                    const orderedIds = Array.from(evt.to.querySelectorAll('.sortable-item'))
+                    const orderedIds = Array.from(container.querySelectorAll('.sortable-item'))
                         .map(item => item.dataset.id)
                         .filter(id => id);
-
-                    // Если перемещение внутри той же категории
-                    if (newCategoryId === oldCategoryId) {
                     @this.call('reorder', orderedIds);
-                        return;
-                    }
-
-                    // Если перемещение между категориями
-                @this.dispatch('reorder-product', {
-                    product_id: movedId,
-                    new_category_id: newCategoryId,
-                    old_category_id: oldCategoryId,
-                    ordered_ids: orderedIds
-                });
                 }
             });
+        }
+        document.querySelectorAll('.sortable-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', item.dataset.id);
+            });
         });
+
+        document.querySelectorAll('[data-category-id]').forEach(btn => {
+            btn.addEventListener('dragover', e => e.preventDefault());
+            btn.addEventListener('drop', e => {
+                e.preventDefault();
+                const productId = e.dataTransfer.getData('text/plain');
+                if (!productId) return;
+            @this.call('handleReorderProduct', {
+                product_id: productId,
+                new_category_id: btn.dataset.categoryId
+                    });
+                });
+            });
     });
 </script>
