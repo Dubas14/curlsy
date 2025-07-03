@@ -178,6 +178,27 @@
                 });
             });
         });
+        document.querySelectorAll('.sortable-category-target').forEach(target => {
+            target.addEventListener('dragover', e => e.preventDefault());
+
+            target.addEventListener('drop', e => {
+                e.preventDefault();
+
+                const productId = e.dataTransfer.getData('product-id');
+                const newCategoryId = e.currentTarget.dataset.categoryId;
+
+                if (!productId || !newCategoryId) {
+                    console.warn('Missing productId or categoryId during drop', { productId, newCategoryId });
+                    return;
+                }
+
+                Livewire.emitTo('admin.product-table', 'reorder-product', {
+                    product_id: productId,
+                    new_category_id: newCategoryId,
+                    ordered_ids: [],
+                });
+            });
+        });
     }
 
     document.addEventListener('DOMContentLoaded', () => {

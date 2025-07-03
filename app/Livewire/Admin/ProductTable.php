@@ -106,6 +106,7 @@ class ProductTable extends Component
 
         $this->selectedCategoryId = $data['new_category_id'];
         $this->loadProducts($this->selectedCategoryId);
+        $this->dispatch('category-selected', $this->selectedCategoryId);
     }
 
     public function render()

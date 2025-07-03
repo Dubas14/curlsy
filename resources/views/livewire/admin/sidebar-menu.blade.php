@@ -11,8 +11,9 @@
             <button
                 wire:click="selectCategory({{ $category->id }})"
                 data-category-id="{{ $category->id }}"
+                droppable="true"
                 @class([
-                    'w-full text-left px-3 py-2 rounded-md transition-all flex items-center justify-between',
+                    'w-full text-left px-3 py-2 rounded-md transition-all flex items-center justify-between sortable-category-target',
                     'bg-blue-50 text-blue-700 font-medium' => $selectedCategoryId == $category->id,
                     'hover:bg-gray-50 text-gray-700' => $selectedCategoryId != $category->id
                 ])
