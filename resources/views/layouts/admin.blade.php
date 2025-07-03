@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Curlsy Admin')</title>
-    @vite('resources/css/app.css')
-    @livewireStyles
-    @livewireScripts
-    @livewireSortableScripts
-    @vite('resources/js/app.js')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 text-gray-900">
 
+<body class="bg-gray-100 text-gray-900">
 <div class="min-h-screen flex">
     {{-- Сайдбар, якщо буде --}}
     <div class="w-64 bg-white shadow-md p-4">
@@ -24,8 +20,6 @@
             ← Назад на сайт
         </a>
     </div>
-
-
     <div class="flex-1 p-6">
         @yield('content')
     </div>

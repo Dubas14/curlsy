@@ -137,49 +137,32 @@
     @endif
 </div>
 
-<script>
-    function initSortable() {
-        document.querySelectorAll('.sortable-category').forEach(container => {
-            if (container._sortable) container._sortable.destroy();
+@push('scripts')
+    <script>
+        function tryInitSortable(retries = 10) {
+            const containers = document.querySelectorAll('.sortable-category');
+            if (containers.length === 0 && retries > 0) {
+                console.log('⏳ Чекаю на sortable-category... спроба:', 11 - retries);
+                setTimeout(() => tryInitSortable(retries - 1), 300); // чекає і пробує ще раз
+                return;
+            }
 
-            container._sortable = new Sortable(container, {
-                animation: 150,
-                group: 'product-categories',
-                onStart(evt) {
-                    evt.item.classList.add('opacity-50');
-                },
-                onEnd(evt) {
-                    evt.item.classList.remove('opacity-50');
+            if (window.initSortable) {
+                console.log('🔥 Викликаю initSortable після очікування');
+                window.initSortable();
+            } else {
+                console.warn('⛔ window.initSortable не знайдено!');
+            }
+        }
 
-                    const productId = evt.item.dataset.id;
-                    let newCategoryId = evt.to.dataset.categoryId;
-
-                    let orderedIds = [];
-                    if (evt.to.classList.contains('sortable-category')) {
-                        orderedIds = Array.from(evt.to.querySelectorAll('.sortable-item')).map(el => el.dataset.id);
-                    } else if (evt.to.classList.contains('sortable-category-target')) {
-                        evt.item.remove();
-                        newCategoryId = evt.to.dataset.categoryId;
-                    }
-
-                    Livewire.emitTo('admin.product-table', 'reorder-product', {
-                        product_id: productId,
-                        new_category_id: newCategoryId,
-                        ordered_ids: orderedIds,
-                    });
-                },
-            });
+        document.addEventListener('DOMContentLoaded', function () {
+            tryInitSortable();
         });
-        document.querySelectorAll('.sortable-category-target').forEach(target => {
-            if (target._sortable) target._sortable.destroy();
-            target._sortable = new Sortable(target, {
-                group: 'product-categories',
-                sort: false,
-                onEnd(evt) {
-                    evt.item.remove();
-                }
-            });
-    });
-        document.addEventListener('DOMContentLoaded', initSortable);
-        document.addEventListener('livewire:update', initSortable);
-</script>
+
+        Livewire.hook('message.processed', (message, component) => {
+            console.log('💡 Livewire DOM оновився, пробую initSortable');
+            tryInitSortable();
+        });
+    </script>
+@endpush
+
