@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'Curlsy Admin')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 
 <body class="bg-gray-100 text-gray-900">
@@ -23,6 +24,8 @@
     <div class="flex-1 p-6">
         @yield('content')
     </div>
+    @livewireScripts
+    @stack('scripts')
 </div>
 </body>
 </html>

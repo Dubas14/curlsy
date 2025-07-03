@@ -17,11 +17,13 @@ window.initSortable = function () {
                 const orderedIds = Array.from(evt.to.querySelectorAll('.sortable-item')).map(el => el.dataset.id);
 
                 console.log('📦 Перетягнуто товар:', productId, '->', newCategoryId, orderedIds);
-                Livewire.emitTo('admin.product-table', 'reorder-product', {
-                    product_id: productId,
-                    new_category_id: newCategoryId,
-                    ordered_ids: orderedIds,
-                });
+                window.dispatchEvent(new CustomEvent('product-reorder', {
+                    detail: {
+                        product_id: productId,
+                        new_category_id: newCategoryId,
+                        ordered_ids: orderedIds,
+                    }
+                }));
             },
         });
     });

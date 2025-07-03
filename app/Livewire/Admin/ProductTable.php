@@ -89,24 +89,21 @@ class ProductTable extends Component
         $this->loadProducts($this->selectedCategoryId);
     }
 
-    public function handleReorderProduct($data): void
+    public function handleReorderProduct($data)
     {
-        $product = Product::find($data['product_id']);
-        if (!$product) return;
+        logger('🔥 Перетягнуто товар:', $data);
 
-        \DB::transaction(function () use ($data, $product) {
-            $product->update(['category_id' => $data['new_category_id']]);
+        // Онови категорію
+        Product::find($data['product_id'])->update([
+            'category_id' => $data['new_category_id']
+        ]);
 
-            if (!empty($data['ordered_ids'])) {
-                foreach ($data['ordered_ids'] as $position => $id) {
-                    Product::where('id', $id)->update(['position' => $position + 1]);
-                }
-            }
-        });
+        // Можеш також зберегти порядок (якщо треба)
+        foreach ($data['ordered_ids'] as $index => $id) {
+            Product::where('id', $id)->update(['sort_order' => $index]);
+        }
 
-        $this->selectedCategoryId = $data['new_category_id'];
-        $this->loadProducts($this->selectedCategoryId);
-        $this->dispatch('category-selected', $this->selectedCategoryId);
+        $this->loadProducts($data['new_category_id']);
     }
 
     public function render()
