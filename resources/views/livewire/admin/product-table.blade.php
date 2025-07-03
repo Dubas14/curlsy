@@ -27,7 +27,6 @@
                     data-category-id="{{ $selectedCategoryId }}"
                     wire:sortable.options="{ animation: 150 }"
                     class="bg-white divide-y divide-gray-200 sortable-category"
-                    data-category-id="{{ $selectedCategoryId }}"
                 >
                 @foreach ($products as $product)
                     @if ($editProductId === $product->id)
@@ -92,7 +91,6 @@
                             wire:key="product-{{ $product->id }}"
                             class="hover:bg-gray-50 cursor-move sortable-item"
                             data-id="{{ $product->id }}"
-                            draggable="true"
                         >
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="font-medium text-gray-900">{{ $product->name }}</div>
@@ -140,72 +138,48 @@
 </div>
 
 <script>
-    function attachDragDropHandlers() {
-        let draggedItem = null;
-
-        document.querySelectorAll('.sortable-item').forEach(item => {
-            item.addEventListener('dragstart', (e) => {
-                draggedItem = item;
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('product-id', item.dataset.id);
-                console.log('Dragging:', item.dataset.id);
-            });
-        });
-
+    function initSortable() {
         document.querySelectorAll('.sortable-category').forEach(container => {
-            container.addEventListener('dragover', e => e.preventDefault());
+            if (container._sortable) container._sortable.destroy();
 
-            container.addEventListener('drop', e => {
-                e.preventDefault();
+            container._sortable = new Sortable(container, {
+                animation: 150,
+                group: 'product-categories',
+                onStart(evt) {
+                    evt.item.classList.add('opacity-50');
+                },
+                onEnd(evt) {
+                    evt.item.classList.remove('opacity-50');
 
-                const productId = e.dataTransfer.getData('product-id');
-                const newCategoryId = container.dataset.categoryId;
+                    const productId = evt.item.dataset.id;
+                    let newCategoryId = evt.to.dataset.categoryId;
 
-                if (!productId || !newCategoryId) {
-                    console.warn('Missing productId or categoryId during drop', { productId, newCategoryId });
-                    return;
-                }
+                    let orderedIds = [];
+                    if (evt.to.classList.contains('sortable-category')) {
+                        orderedIds = Array.from(evt.to.querySelectorAll('.sortable-item')).map(el => el.dataset.id);
+                    } else if (evt.to.classList.contains('sortable-category-target')) {
+                        evt.item.remove();
+                        newCategoryId = evt.to.dataset.categoryId;
+                    }
 
-                const orderedIds = Array.from(container.querySelectorAll('.sortable-item'))
-                    .map(el => el.dataset.id);
-
-                console.log('Drop fired:', { productId, newCategoryId, orderedIds });
-
-                Livewire.emitTo('admin.product-table', 'reorder-product', {
-                    product_id: productId,
-                    new_category_id: newCategoryId,
-                    ordered_ids: orderedIds,
-                });
+                    Livewire.emitTo('admin.product-table', 'reorder-product', {
+                        product_id: productId,
+                        new_category_id: newCategoryId,
+                        ordered_ids: orderedIds,
+                    });
+                },
             });
         });
         document.querySelectorAll('.sortable-category-target').forEach(target => {
-            target.addEventListener('dragover', e => e.preventDefault());
-
-            target.addEventListener('drop', e => {
-                e.preventDefault();
-
-                const productId = e.dataTransfer.getData('product-id');
-                const newCategoryId = e.currentTarget.dataset.categoryId;
-
-                if (!productId || !newCategoryId) {
-                    console.warn('Missing productId or categoryId during drop', { productId, newCategoryId });
-                    return;
+            if (target._sortable) target._sortable.destroy();
+            target._sortable = new Sortable(target, {
+                group: 'product-categories',
+                sort: false,
+                onEnd(evt) {
+                    evt.item.remove();
                 }
-
-                Livewire.emitTo('admin.product-table', 'reorder-product', {
-                    product_id: productId,
-                    new_category_id: newCategoryId,
-                    ordered_ids: [],
-                });
             });
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        attachDragDropHandlers();
     });
-
-    document.addEventListener('livewire:update', () => {
-        attachDragDropHandlers();
-    });
+        document.addEventListener('DOMContentLoaded', initSortable);
+        document.addEventListener('livewire:update', initSortable);
 </script>
